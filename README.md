@@ -13,7 +13,7 @@ To install this tool, firstly install all of its dependencies (Python 2.x, Numpy
 ### Preview
 ![Demo](https://github.com/klmh001/PiViewer/raw/master/Demo.png)
 
-### Publication
-- PLACEHOLDER: For detailed information, please refer to the paper:
+### Publication (placeholder)
+- For detailed information, please refer to the paper:  
 PiViewer: an open-source tool for automated detection and display of pi-pi interactions (submitting)
 - Please cite the paper if you find this tool useful.
