@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 PiViewer: an open-source tool for automated detection and display of pi-pi interactions.
-First created and copyright by Hu Ge <gehuchina@gmail.com>
+Created by Hu Ge <gehuchina@gmail.com>
 """
 
 # Copyright Notice
@@ -56,29 +56,27 @@ def vecAngle(vec1, vec2):
 
 
 # The main PiPi viewer function
-def PiPi(PDBFILE, LIGNAME, DISTANCE, DIHP, DIHT):
-    # ==============================================================================
+def PiPi(pdb_file, lig_name, centroid_distance, dih_parallel, dih_tshape):
     # Get ligand residue and print its name.
-    # ==============================================================================
     ligAtomList = []
     ligAtomIdList = []
-    mol = pybel.readfile('pdb', PDBFILE).next()
+    mol = pybel.readfile('pdb', pdb_file).next()
     print "A total of %s residues" % mol.OBMol.NumResidues()
-    exist = 0
+    lig = None
     for res in ob.OBResidueIter(mol.OBMol):
         # print res.GetName()
-        if res.GetName() == LIGNAME:
+        if res.GetName() == lig_name:
             lig = res
-            exist = 1
             print "Ligand residue name is: ", lig.GetName()
             break
-    if exist == 0:
-        print "No ligand residue %s found, please redefine!" % LIGNAME
+    if not lig:
+        print "No ligand residue %s found, please confirm." % lig_name
         return 0
-    for atom in ob.OBResidueAtomIter(lig):
-        # print atom.GetIdx()
-        ligAtomList.append(atom)
-        ligAtomIdList.append(atom.GetIdx())
+    else:
+        for atom in ob.OBResidueAtomIter(lig):
+            # print atom.GetIdx()
+            ligAtomList.append(atom)
+            ligAtomIdList.append(atom.GetIdx())
 
     # Set ring_id
     i = 0
@@ -113,7 +111,7 @@ def PiPi(PDBFILE, LIGNAME, DISTANCE, DIHP, DIHT):
     print "\nReceptor has ", len(recRingList), " rings,",
     print " has ", len(recAroRingList), " aromatic rings."
 
-    # find and show the rings
+    # Find and show the rings
     ligRingCenter = ob.vector3()
     recRingCenter = ob.vector3()
     ligNorm1 = ob.vector3()
@@ -129,7 +127,7 @@ def PiPi(PDBFILE, LIGNAME, DISTANCE, DIHP, DIHT):
     for ligRing in ligAroRingList:
         ligRing.findCenterAndNormal(ligRingCenter, ligNorm1, ligNorm2)
         coord1 = [ligRingCenter.GetX(), ligRingCenter.GetY(), ligRingCenter.GetZ()]
-        # create pseudoatom for each lig ring center
+        # Create a pseudoatom for the centroid of each ring in the ligand
         objectName1 = 'psCenter%.2d' % i
         i += 1
         cmd.pseudoatom(object=objectName1, pos=coord1)
@@ -138,9 +136,9 @@ def PiPi(PDBFILE, LIGNAME, DISTANCE, DIHP, DIHT):
             recRing.findCenterAndNormal(recRingCenter, recNorm1, recNorm2)
             dist = ligRingCenter.distSq(recRingCenter)
             angle = vecAngle(ligNorm1, recNorm1)
-            if (dist ** 0.5 < DISTANCE and (angle < DIHP or angle > DIHT)):  # the conditions
+            if (dist ** 0.5 < centroid_distance and (angle < dih_parallel or angle > dih_tshape)):  # the criteria
                 coord2 = [recRingCenter.GetX(), recRingCenter.GetY(), recRingCenter.GetZ()]
-                # create pseudoatom for each lig ring center
+                # Create pseudoatom for each lig ring center
                 objectName2 = 'psCenter%.2d' % i
                 i += 1
                 cmd.pseudoatom(object=objectName2, pos=coord2)
@@ -156,12 +154,12 @@ def PiPi(PDBFILE, LIGNAME, DISTANCE, DIHP, DIHT):
 # Define the dialog for parameters
 def setParamDialog(app):
     top = Tk()
-    top.wm_title('PiViewer v1.0 for PyMOL')
+    top.wm_title('PiViewer v1.2 for PyMOL')
     # Labels
-    L1 = Label(top, text="Ligand residue name: ")
-    L2 = Label(top, text="Max Distance between two plane: ")
-    L3 = Label(top, text="Dihedral parallel max: ")
-    L4 = Label(top, text="Dihedral T-shaped min: ")
+    L1 = Label(top, text="Ligand residue name")
+    L2 = Label(top, text="Max ring centroid distance")
+    L3 = Label(top, text="Max dihedral (parallel)")
+    L4 = Label(top, text="Min dihedral (T-shaped)")
     L1.grid(row=0, column=0, sticky=W)
     L2.grid(row=1, column=0, sticky=W)
     L3.grid(row=2, column=0, sticky=W)
@@ -181,23 +179,22 @@ def setParamDialog(app):
     E3.grid(row=2, column=1)
     E4.grid(row=3, column=1)
 
-    # Get the input parameters and launch the Pi-Pi viewer function
+    # When clicked, get the input and launch the main Pi-Pi viewer function - PiPi
     def B1Click():
-        LIGNAME = E1.get()
-        DISTANCE = float(E2.get())
-        DIHP = float(E3.get())
-        DIHT = float(E4.get())
-        PDBFILE = ''
-        PDBFILE = tkFileDialog.askopenfilename(
+        lig_name = E1.get()
+        centroid_distance = float(E2.get())
+        dih_parallel = float(E3.get())
+        dih_tshape = float(E4.get())
+        pdb_file = tkFileDialog.askopenfilename(
             filetypes=[("PDB(Protein Data Bank files", "*.pdb"), ("PDB(Protein Data Bank files", "*.ent"),
-                       ('All files', '*')], title='Please select your PDB file for analysis')
-        PDBFILE = str(os.path.normpath(PDBFILE))
-        print LIGNAME, DISTANCE, DIHP, DIHT
-        print PDBFILE
-        PiPi(PDBFILE, LIGNAME, DISTANCE, DIHP, DIHT)
+                       ('All files', '*')], title='Please select the target PDB file')
+        pdb_file = str(os.path.normpath(pdb_file))
+        print lig_name, centroid_distance, dih_parallel, dih_tshape
+        print pdb_file
+        PiPi(pdb_file, lig_name, centroid_distance, dih_parallel, dih_tshape)
         top.destroy()
 
-    B1 = Button(top, bd=2, pady=5, text="GO !", command=B1Click)
+    B1 = Button(top, bd=2, pady=5, text="Run", command=B1Click)
     B2 = Button(top, bd=2, pady=5, text="Cancel", command=top.destroy)
     B1.grid(row=4, column=0, sticky=W + E)
     B2.grid(row=4, column=1, sticky=W + E)
@@ -209,6 +206,5 @@ def __init__(self):
                              'PiViewer',
                              label='PiViewer',
                              command=lambda s=self: setParamDialog(s))
-
 
 cmd.extend('PiPi', PiPi)
