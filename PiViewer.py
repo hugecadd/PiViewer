@@ -51,7 +51,7 @@ def vecAngle(vec1, vec2):
 
 
 # The main PiPi viewer function
-def find_PiPi(pdb_file, lig_name, centroid_distance, dih_parallel, dih_tshape):
+def find_PiPi(pdb_file, lig_name, centroid_distance=5.0, dih_parallel=25, dih_tshape=80, verbose=1):
     """
     Find Pi-Pi interactions around the specified ligand residue from the pdb file.
     :param pdb_file: path of the target file in PDB format.
@@ -65,17 +65,17 @@ def find_PiPi(pdb_file, lig_name, centroid_distance, dih_parallel, dih_tshape):
     ligAtomList = []
     ligAtomIdList = []
     mol = pybel.readfile('pdb', pdb_file).next()
-    print "A total of %s residues" % mol.OBMol.NumResidues()
+    if verbose: print "A total of %s residues" % mol.OBMol.NumResidues()
     lig = None
     for res in ob.OBResidueIter(mol.OBMol):
         # print res.GetName()
         if res.GetName() == lig_name:
             lig = res
-            print "Ligand residue name is:", lig.GetName()
+            if verbose: print "Ligand residue name is:", lig.GetName()
             break
     if not lig:
-        print "No ligand residue %s found, please confirm." % lig_name
-        return 0
+        if verbose: print "No ligand residue %s found, please confirm." % lig_name
+        return -1
     else:
         for atom in ob.OBResidueAtomIter(lig):
             # print atom.GetIdx()
@@ -101,19 +101,19 @@ def find_PiPi(pdb_file, lig_name, centroid_distance, dih_parallel, dih_tshape):
                 if ring not in ligRingList:
                     ligRingList.append(ring)
                     ligRingIdList.append(ring.ring_id)
-                    print "ligand ring_ID: ", ring.ring_id,
+                    if verbose: print "ligand ring_ID: ", ring.ring_id,
                     if ring.IsAromatic():
-                        print "Aromatic"
+                        if verbose: print "aromatic"
                         ligAroRingList.append(ring)
                     else:
-                        print "Saturated"
+                        if verbose: print "saturated"
     for ring in mol.sssr:
         if ring.ring_id not in ligRingIdList:
             recRingList.append(ring)
             if ring.IsAromatic():
                 recAroRingList.append(ring)
-    print "\nReceptor has ", len(recRingList), " rings,",
-    print " has ", len(recAroRingList), " aromatic rings."
+    if verbose: print "\nReceptor has ", len(recRingList), " rings,",
+    if verbose: print " has ", len(recAroRingList), " aromatic rings."
 
     # Find and show the rings
     ligRingCenter = ob.vector3()
@@ -135,8 +135,8 @@ def find_PiPi(pdb_file, lig_name, centroid_distance, dih_parallel, dih_tshape):
             angle = vecAngle(ligNorm1, recNorm1)
             if (dist < centroid_distance and (angle < dih_parallel or angle > dih_tshape)):  # the criteria
                 count += 1
-                print "Pi-Pi ring pairs: %3s,%3s  Angle(deg.): %5.2f  Distance(A): %.2f" % (recRing.ring_id, ligRing.ring_id, angle, dist)
-    print "Total Pi-Pi interactions:", count
+                if verbose: print "Pi-Pi ring pairs: %3s,%3s  Angle(deg.): %5.2f  Distance(A): %.2f" % (recRing.ring_id, ligRing.ring_id, angle, dist)
+    if verbose: print "Total Pi-Pi interactions:", count
     return count
 
 
