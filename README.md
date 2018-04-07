@@ -9,7 +9,7 @@ The aromatic ring perception and the pi-pi interaction identification is impleme
 - PyMOL
 
 ### Installation
-To install this tool, firstly install all of its dependencies (Python 2.x, Numpy, Pybel, and PyMOL). Then, open PyMOL->Plugin and install the plugin file. After installation, restart PyMOL and run PiViewer from the "Plugin" menu.
+To install this tool, firstly install all of its dependencies (Python 2.x/3.x, Numpy, Pybel, and PyMOL). Then, open PyMOL->Plugin and install the plugin file. After installation, restart PyMOL and run PiViewer from the "Plugin" menu.
 
 ### Preview
 ![Demo](https://github.com/klmh001/PiViewer/raw/master/Demo.png)
