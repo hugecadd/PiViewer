@@ -16,5 +16,5 @@ To install this tool, firstly install all of its dependencies (Python 2.x/3.x, N
 
 ### Publication (placeholder)
 - For detailed information, please refer to the paper:  
-PiViewer: an open-source tool for automated detection and display of pi-pi interactions (submitting)
+PiViewer: an open-source tool for automated detection and display of pi-pi interactions (https://doi.org/10.1111/cbdd.13340)
 - Please cite the paper if you find this tool useful.
