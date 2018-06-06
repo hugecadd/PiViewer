@@ -14,9 +14,9 @@ To install this tool, firstly install all of its dependencies (Python 2.x/3.x, N
 ### Preview
 ![Demo](https://github.com/klmh001/PiViewer/raw/master/Demo.png)
 
-### Publication
-- For more details, please refer to the paper:
+### How to cite
 
+Liu Y, Ao X, Wang Q, Wang J, Ge H. PiViewer: An open-source tool for automated detection and display of π–π interactions. Chem Biol Drug Des. 2018;00:1–6. https://doi.org/10.1111/cbdd.13340
 PiViewer: an open-source tool for automated detection and display of pi-pi interactions (https://doi.org/10.1111/cbdd.13340)
 
 - Please cite the paper if you find the tool useful.
